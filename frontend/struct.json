@@ -1,0 +1,47 @@
+// Messages Client → Serveur
+{
+  "type": "connect",
+  "username": "john_doe"
+}
+
+{
+  "type": "create_room",
+  "room_name": "Salon Python"
+}
+
+{
+  "type": "join_room",
+  "room_name": "Salon Python"
+}
+
+{
+  "type": "leave_room"
+}
+
+{
+  "type": "send_message",
+  "content": "Bonjour tout le monde !"
+}
+
+// Messages Serveur → Client
+{
+  "type": "room_list",
+  "rooms": ["Général", "Salon Python", "Gaming"]
+}
+
+{
+  "type": "message",
+  "username": "alice",
+  "content": "Salut !",
+  "timestamp": "2024-01-15T10:30:00"
+}
+
+{
+  "type": "notification",
+  "content": "Vous avez rejoint le salon 'Général'"
+}
+
+{
+  "type": "error",
+  "message": "Ce nom d'utilisateur existe déjà"
+}
