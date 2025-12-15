@@ -90,7 +90,7 @@ Tout d'abord on importe les bibliothèques nécessaires : `asyncio` pour la gest
 = Client
 == Language
 Nous avons choisi d'utiliser une interface web car cela permet une accessibilité facile via un navigateur, sans nécessiter d’installation supplémentaire.\
-De plus, JavaScript gère les WebSockets nativement.\
+De plus, JavaScript gère les WebSockets nativement et ça nous montre que grâce au protocole WebSocket, l'interface client peut être dans un language différent du serveur sans aucun problèmes et montre la séparaison frontend/backend.\
 Enfin, à terme, cela permettrait également de déployer l’application sur un serveur distant, accessible depuis n’importe quel appareil connecté à Internet.\
 == Explication du code
 *WORK IN PROGRESS*
