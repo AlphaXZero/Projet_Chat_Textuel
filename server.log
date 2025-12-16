@@ -1,0 +1,20 @@
+2025-12-16 23:49:23,282 - INFO - server listening on 127.0.0.2:8001
+2025-12-16 23:55:12,287 - INFO - Serveur démarré sur 127.0.0.2:8001
+2025-12-16 23:55:12,318 - INFO - server listening on 127.0.0.2:8001
+2025-12-16 23:55:28,331 - INFO - connection open
+2025-12-16 23:55:28,331 - INFO - Nouvelle connexion client ('127.0.0.1', 39884).
+2025-12-16 23:55:28,338 - INFO - Login réussi : '' connecté avec succès.
+2025-12-16 23:55:39,302 - INFO - Client supprimé : ('127.0.0.1', 39884)
+2025-12-16 23:55:45,609 - INFO - connection open
+2025-12-16 23:55:45,610 - INFO - Nouvelle connexion client ('127.0.0.1', 42368).
+2025-12-16 23:55:45,616 - INFO - Login réussi : 'jean' connecté avec succès.
+2025-12-16 23:55:54,774 - INFO - Client supprimé : ('127.0.0.1', 42368)
+2025-12-16 23:56:05,707 - INFO - connection open
+2025-12-16 23:56:05,708 - INFO - Nouvelle connexion client ('127.0.0.1', 46602).
+2025-12-16 23:56:05,714 - INFO - Login réussi : 'jean' connecté avec succès.
+2025-12-16 23:56:09,281 - INFO - Message dans 'general' par 'jean' : fdqsf
+2025-12-16 23:56:13,969 - INFO - Client supprimé : ('127.0.0.1', 46602)
+2025-12-16 23:56:25,289 - INFO - connection open
+2025-12-16 23:56:25,289 - INFO - Nouvelle connexion client ('127.0.0.1', 47896).
+2025-12-16 23:56:25,296 - INFO - Login réussi : 'fqs' connecté avec succès.
+2025-12-16 23:56:29,843 - INFO - Client supprimé : ('127.0.0.1', 47896)

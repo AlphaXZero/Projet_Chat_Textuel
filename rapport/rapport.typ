@@ -82,7 +82,7 @@ Cependant, cette approche réduit la part de développement "manuel", ce qui *li
 Nous optâmes donc de partir sur le *protocole WebSocket grâce à la bibliothèque python éponyme*.\
 C'est d'ailleurs ce *qu'utilisent* certains logiciels pour communication textuel en temps réel comme *Slack, Discord*, etc. Ce qui nous *conforte dans notre choix*.
 
-== Loggin
+== Logging
 Pour enregistrer les informations sur l'exécution de notre application, nous allons utiliser le module intégré en Python `logging`.\
 On le configure au début:
 ```python
@@ -94,10 +94,11 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
+logger = logging.getLogger(__name__)
 ```
 Puis dans le code nous mettons une ligne de ce genre pour l'écrire dans le server.log.
 ```python
-logging.info(f"Nouvelle connexion depuis {websocket}")
+logger.info("Login échoué : pseudo '%s' déjà pris.", username)
 ```
 
 == Protocole json
