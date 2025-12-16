@@ -135,6 +135,7 @@ Quand un client va se connecter, on le reçoit avec la fonction handle_client qu
 async def handle_client(websocket):
   clients[websocket] = {"user": None, "room": "general"}
 ```
+#pagebreak()
 On reçoit ensuite les messages du client chaque message est attendu au format json décrit précedemment.On envoie également au client les salons disponibles, le mot-clé await permet d'attendre que le message soit envoyé avant de continuer. Tout ça toujours sans bloquer les autres clients.\
 ```python
   try:
@@ -173,6 +174,7 @@ On retrouve plus loin la gestion des autres actions. (join_room change juste la 
         elif action == "send_message":...
         elif action == "create_room":...
 ```
+#pagebreak()
 Les déconnexions sont gérer comme tel. Quand il y a une erreur (page fermé), ça le met dans le log et ça supprime le client de notre liste.
 ```python
   except websockets.exceptions.ConnectionClosed:
@@ -214,7 +216,7 @@ async def main(ip, port):
 asyncio.run(main("127.0.0.2", 8001))
 ```
 
-
+#pagebreak()
 = Client
 == langage
 Nous avons choisi d'utiliser une interface web (html/js/css) car cela permet une accessibilité immédiate via un navigateur, sans nécessiter d’installation supplémentaire et nous permettra de mettre en application les enseignements de notre cours de PHP/HTML. Les critiques ont été entendues et partiellement comprises mais nous pensons que si nous voulons tout géré en "natif", il suffirait d'ajouter une deuxième interface graphique. N'est-ce pas justement là la force des websockets ? Cela permet d'avoir plusieurs clients. On pourrait aussi imaginer un client en CLI.\
@@ -246,6 +248,7 @@ function connect() {
     };
 }
 ```
+#pagebreak()
 === Gestion de la reception des messages
 On rajoute toujours dans la fonction connect : `socket.onmessage` qui dira à notre code comment réagir en fonction des différentes actions. Pour le moment, nous mettons juste comment le client doit gérer les messages qu'il reçoit.
 ```js
@@ -299,5 +302,5 @@ Nous avons utilisé GitHub afin de travailler simultanément sur les parties cli
   [Client], [Coisne Valentin],
   [Rapport], [Van der Veen Georgé et Coisne Valentin],
 )
-
+#pagebreak()
 #bibliography("ref.bib", title: "Références")
