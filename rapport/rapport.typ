@@ -15,6 +15,9 @@
   // Text used in left side of the footer
 )
 
+#show cite: it => {
+  text(fill: blue, it)
+}
 
 #set text(font: "Liberation Serif", 12pt)
 #let bluee(body) = text(body, blue)
@@ -32,14 +35,15 @@
 #outline(title: "Table des matières")
 #pagebreak()
 
+
 = Serveur
-== Language de programmation
-Nous avons choisi d'implémenter le *serveur en Python* car c'est un *language* qui nous est *familier* et qui permet de *gérer* facilement le *réseau et l'asynchrone* grâce à des bibliothèques comme *asyncio* et *websockets*.\
-== Protocole
+== langage de programmation
+Nous avons choisi d'implémenter le *serveur en Python* car c'est un *langage* qui nous est *familier* et qui permet de *gérer* facilement le *réseau et l'asynchrone* grâce à des bibliothèques comme *asyncio* et *websockets*.\
+== Protocole de transport
 Arpsè quelques recherches, nous avons identifié *trois approches* principales pour le *protocole* de transport :
 - Utiliser des *sockets* TCP bruts.
-- Utiliser un *protocole existant*.
-- Intégrer WebSocket via *FastAPI*.
+- Utiliser un *protocole de plus haut-niveau*.
+- Utiliser un *framework* (encore plus haut-niveau).
 
 === TCP brut
 L’utilisation directe de *sockets TCP* permettrait de concevoir un *protocole de communication personnalisé*, offrant un *intérêt pédagogique* indéniable.\
@@ -67,10 +71,10 @@ Bien que écarté de ce projet pour ces raisons, nous nous sommes quand même in
   [On peut utiliser wss:\// pour *chiffrer les données en TLS*(Transport Layer Security ).],
 )
 
-=== Protocole existant
-Utiliser un *protocole existant* comme vu au cours permettrait de bénéficier de *fonctionnalités avancées* et d’une *meilleure fiabilité*.\
-- *UDP* : *Exclu* en raison de son *absence de fiabilité et de gestion de connexion*.
-- *QUIC* : *Intéressant* pour sa *rapidité et son multiplexage*, *mais encore peu standardisé et mal supporté en Python*.
+=== Protocole haut-niveau existant
+Utiliser un *protocole haut-niveau* comme vu au cours permettrait de bénéficier de *fonctionnalités avancées* et d’une *meilleure fiabilité*.\
+2 choix
+- *WebTransport* : *Intéressant* pour sa *rapidité et son multiplexage*, *mais encore peu standardisé et mal supporté en Python*.
 - *WebSocket* : Protocole *connecté* et *fiable*, *compatible avec tous les navigateurs et bien supporté en Python*.
 
 === WebSocket via FastAPI
@@ -80,6 +84,9 @@ Cependant, cette approche réduit la part de développement "manuel", ce qui *li
 === Conclusion du choix de protocole
 Nous optâmes donc de partir sur le *protocle WebSocket grâce à la bibliothèque python éponyme*.\
 C'est d'ailleurs ce *qu'utilise* les logiciles de communication en temps réel comme *Slack, Discord*, etc. Ce qui nous *conforte dans notre choix*.
+
+== Loggin
+Pour enregistrer les informations sur l'exécution de notre application
 
 == Protocole json
 Voici le *protocole* que nous avons défini pour la *communication* entre le *client* et le *serveur*. Nous utilisons le *format JSON* pour structurer les messages échangés. Nous nous sommes limités aux *fonctionnalités de base* pour garder le serveur *simple et lisible*.
@@ -102,12 +109,14 @@ Nous nous sommes efforcés de garder le code du serveur *simple et lisible* tout
 Tout d'abord on importe les bibliothèques nécessaires : `asyncio` pour la gestion asynchrone, `websockets` pour la communication WebSocket, et `json` pour le formatage des messages.\
 
 Nous avons ensuite un dictionnaire *clients* qui stockera le *websocket en clé* et un *dictionnaire* avec le *nom* d'utilisateur et la *salon* de chat en *valeur*.\
-Il faudrait probablement un deuxième dictionnaire des salons avec chaque utilisateur connecté dessus en valeur, cela permettrait de gérer plus facilement l'envoi de messages à tous les utilisateurs. Mais étant donné, le peu de clients que nous avions à gérer, nous avons préféré garder une seule structure de données pour simplifier le code.\
+#text(
+  size: 10pt,
+)[(Il faudrait probablement un deuxième dictionnaire des salons avec chaque utilisateur connecté dessus en valeur, cela permettrait de gérer plus facilement l'envoi de messages à tous les utilisateurs. Mais étant donné, le peu de clients que nous avions à gérer, nous avons préféré garder une seule structure de données pour simplifier le code.)]\
 ```python
 clients = {} # Format: {websocket: {"user": str, "room": str}}
 ```
 
-Quand un client va se connecter, on le reçoit avec la fonction handle_client.On enregistre dans le dictionnaire clients avec son websocket comme clé et on .\
+Quand un client va se connecter, on le reçoit avec la fonction handle_client.On enregistre dans le dictionnaire clients avec son websocket comme clé et on le met dans le salon room.\
 ```python
 async def handle_client(websocket):
   clients[websocket] = {"user": None, "room": "general"}
@@ -170,12 +179,74 @@ asyncio.run(main("127.0.0.2", 8001))
 ```
 
 = Client
-== Language
-Nous avons choisi d'utiliser une interface web car cela permet une accessibilité facile via un navigateur, sans nécessiter d’installation supplémentaire.\
-De plus, JavaScript gère les WebSockets nativement et ça nous montre que grâce au protocole WebSocket, l'interface client peut être dans un language différent du serveur sans aucun problèmes et montre la séparaison frontend/backend.\
+== langage
+Nous avons choisi d'utiliser une interface web car cela permet une accessibilité facile via un navigateur, sans nécessiter d’installation supplémentaire et nous permettra de mettre en applications notre cours de php/html.\
+De plus, JavaScript gère les WebSockets nativement et ça nous montre que grâce au protocole WebSocket, l'interface client peut être dans un langage différent du serveur sans aucun problèmes et montre la séparaison frontend/backend.\
 Enfin, à terme, cela permettrait également de déployer l’application sur un serveur distant, accessible depuis n’importe quel appareil connecté à Internet.\
 == Explication du code
-*WORK IN PROGRESS*
+=== Connexion au serveur
+
+Tout d'abord, nous avons un boutton de connexion dans le html qui va appeller notre fonction connect dans js.\
+Tandis que dans notre js on récupère les champs ip, user_name et port pour ensuite envoyer l'action "login" au serveur avec notre nom d'utilisateur.
+`html`:
+```html
+<input type="text" id="serverIp" value="127.0.0.2" required>
+<input type="number" id="serverPort" value="8001" required>
+<input type="text" id="username" required maxlength="20" placeholder="Votre pseudo...">
+<button type="button" class="btn btn-primary" onclick="connect()">Se connecter</button>
+```
+`js`:
+```js
+function connect() {
+    const ip = document.getElementById("serverIp").value
+    const user_name = document.getElementById("username").value
+    const port = document.getElementById("serverPort").value
+    socket = new WebSocket(`ws://${ip.trim()}:${port.trim()}`)
+    socket.onopen = () => {
+        socket.send(JSON.stringify({ action: 'login', user: user_name }))
+        connectionPage.style.display = "none"
+        chatPage.style.display = "flex"
+    };
+}
+```
+=== Gestion de la reception des messages
+On rajoute toujours dans la fonction connect : `socket.onmessage` qui dira à notre code comment réagir en fonction des différentes actions. Pour le moment, nous mettons juste comment le client doit gérer les messages qu'il reçoit.
+```js
+    socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.action === 'message') {
+            add_message(data.message);
+        }
+    }
+```
+Nous nous occupons donc de la réception des messages, on crée une fonction add_message qui édite notre `div` pour ajouter du texte dedans. On appellera cette fonction à chaque fois qu'on souhaitera ajouter des choses dans le chat.
+Sans trop rentrer dans les détails, ça ajouter le message, scroll tout en bas et vide le champ d'entrée
+```js
+function add_message(message) {
+    const message_input = document.getElementById("messageInput")
+    const new_message = document.createElement("div")
+    const message_container = document.getElementById("messagesContainer")
+    new_message.textContent = message
+    message_container.appendChild(new_message)
+    message_container.scrollTop = message_container.scrollHeight
+    message_input.value = ""
+}
+```
+=== Gestion de l'envoi des messages
+Nous avons un champ d'entrée et un boutton dans notre html. Le script js récupere le contenu du champ une fois le bouton pressé. Le contenu est donc envoyé avec l'action `send_message` au serveur celui-ci va donc le recevoir et le renvoyer ensuite à tout le monde comme nous l'avons vu précedemment dans la partie. Ensuite tous les clients recevront le message qui sera ajouté dans le chat grâce au code vu juste au-dessus.
+`html`:
+```html
+<input type="text" id="messageInput" placeholder="Tapez votre message..." required>
+<button type="button" onclick="send_message()">Envoyer</button>
+```
+`js`:
+```js
+function send_message() {
+    const message = document.getElementById("messageInput").value
+    socket.send(JSON.stringify({ action: 'send_message', message: message }))
+}
+```
+
 
 = Répartition des tâches
 #table(
@@ -185,3 +256,5 @@ Enfin, à terme, cela permettrait également de déployer l’application sur un
   [Client], [Coisne Valentin],
   [Rapport], [Van der Veen Georgé et Coisne Valentin],
 )
+
+#bibliography("ref.bib", title: "Références")

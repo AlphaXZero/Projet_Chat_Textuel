@@ -8,6 +8,7 @@ rooms = ["general"]
 
 async def handle_client(websocket):
     clients[websocket] = {"user": None, "room": "general"}
+    print("ici")
     try:
         await send_rooms(websocket)
         async for message in websocket:
@@ -27,6 +28,7 @@ async def handle_client(websocket):
                         websocket,
                         f"Bienvenue, {clients[websocket]['user']}! Vous êtes dans le salon 'general'.",
                     )
+                print(clients)
             elif clients[websocket]["user"] is None:
                 await send_message(
                     websocket, "veuillez choisir un pseudo avant de pouvoir chatter"
@@ -38,6 +40,7 @@ async def handle_client(websocket):
                 await send_message(websocket, f"Vous avez rejoint le salon {room}.")
 
             elif action == "send_message":
+                print(data)
                 room = clients[websocket]["room"]
                 user = clients[websocket]["user"]
                 message = data.get("message")
