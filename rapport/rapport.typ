@@ -86,7 +86,22 @@ Nous optâmes donc de partir sur le *protocle WebSocket grâce à la bibliothèq
 C'est d'ailleurs ce *qu'utilise* les logiciles de communication en temps réel comme *Slack, Discord*, etc. Ce qui nous *conforte dans notre choix*.
 
 == Loggin
-Pour enregistrer les informations sur l'exécution de notre application
+Pour enregistrer les informations sur l'exécution de notre application, nous allons utiliser le module intégré en Python `logging`.\
+On le configure au début:
+```python
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("server.log"),
+        logging.StreamHandler()
+    ]
+)
+```
+Puis dans le code nous faisons juste
+```python
+logging.info(f"Nouvelle connexion depuis {websocket.remote_address}")
+```
 
 == Protocole json
 Voici le *protocole* que nous avons défini pour la *communication* entre le *client* et le *serveur*. Nous utilisons le *format JSON* pour structurer les messages échangés. Nous nous sommes limités aux *fonctionnalités de base* pour garder le serveur *simple et lisible*.

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projet_Chat_Textuel</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Page de connexion -->
+        <div class="connection-page" id="connectionPage">
+            <h1>Projet_Chat_Textuel</h1>
+            <h2>Login Page</h2>
+            <p class="subtitle">Connectez-vous pour commencer à discuter</p>
+
+            <div id="alertContainer"></div>
+
+            <form id="connectionForm">
+                <div class="form-group">
+                    <label for="serverIp">Adresse IP du serveur</label>
+                    <input type="text" id="serverIp" value="127.0.0.2" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="serverPort">Port du serveur</label>
+                    <input type="number" id="serverPort" value="8001" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" id="username" required maxlength="20" placeholder="Votre pseudo...">
+                </div>
+
+                <button type="button" class="btn btn-primary" onclick="connect()">Se connecter</button>
+            </form>
+        </div>
+
+        <!-- Page de chat -->
+        <div class="chat-page" id="chatPage">
+            <!-- Barre latérale -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h2>Salons de discussion</h2>
+                    <div class="username" id="currentUsername"></div>
+                </div>
+
+                <div class="room-controls">
+                    <input type="text" id="newRoomName" placeholder="Nom du nouveau salon...">
+                    <button class="btn btn-success" style="width: 100%;" onclick="create_room()">+ Créer un
+                        salon</button>
+                </div>
+
+                <div class="room-list" id="roomList">
+                    <!-- Les salons seront ajoutés ici -->
+                </div>
+
+                <div style="padding: 15px; border-top: 1px solid #e0e0e0;">
+                    <button class="btn btn-danger" style="width: 100%;" onclick="disconnect()">Déconnexion</button>
+                </div>
+            </div>
+
+            <!-- Zone de chat principale -->
+            <div class="chat-main">
+                <div class="chat-header">
+                    <h3 id="currentRoomName">Général</h3>
+                    <div class="status">
+                        <div class="status-dot"></div>
+                        <span>Connecté</span>
+                    </div>
+                </div>
+
+                <div class="messages-container" id="messagesContainer">
+                    <!-- Les messages seront ajoutés ici -->
+                </div>
+
+                <div class="message-input-container">
+                    <form class="message-input-form" id="messageForm">
+                        <input type="text" id="messageInput" placeholder="Tapez votre message..." required>
+                        <button type="button" onclick="send_message()">Envoyer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
