@@ -76,6 +76,6 @@ function join_room(room) {
 function disconnect() {
     socket.close()
     chatPage.style.display = "none"
-    connectionPage.style.display = "flex"
+    connectionPage.style.display = "block"
 
 }
