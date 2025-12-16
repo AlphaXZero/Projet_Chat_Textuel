@@ -3,6 +3,11 @@ function connect() {
     const ip = document.getElementById("serverIp").value.trim()
     const user_name = document.getElementById("username").value.trim()
     const port = document.getElementById("serverPort").value.trim()
+
+    if (ip === "" || user_name === "" || port === "") {
+        alert("Veuillez remplir tous les champs")
+        return
+    }
     socket = new WebSocket(`ws://${ip}:${port}`)
     socket.onopen = () => {
         socket.send(JSON.stringify({ action: 'login', user: user_name }))
