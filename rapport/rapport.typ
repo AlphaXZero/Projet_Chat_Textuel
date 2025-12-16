@@ -129,12 +129,12 @@ Nous avons ensuite un dictionnaire *clients* qui stockera le *websocket en clé*
 clients = {} # Format: {websocket: {"user": str, "room": str}}
 ```
 
-Quand un client va se connecter, on le reçoit avec la fonction handle_client qui est en asynchrone ce qui permet de gérer plusieurs clients en même temps. On enregistre dans le dictionnaire clients avec son websocket comme clé et on le met dans le salon general par défaut.\
+Quand un client va se connecter, on le reçoit avec la fonction handle_client qui est en asynchrone ce qui permet de gérer plusieurs clients en même temps sans bloquer l'exécution globale. On enregistre dans le dictionnaire clients avec son websocket comme clé et on le met dans le salon general par défaut.\
 ```python
 async def handle_client(websocket):
   clients[websocket] = {"user": None, "room": "general"}
 ```
-On reçoit ensuite les messages du client chaque message est attendu au format json décrit précedemment.(on envoie également au client les salons disponibles)\
+On reçoit ensuite les messages du client chaque message est attendu au format json décrit précedemment.On envoie également au client les salons disponibles, le mot-clé await permet d'attendre que le message soit envoyé avant de continuer. Tout ça toujours sans bloquer les autres clients.\
 ```python
   try:
     await send_rooms(websocket)
@@ -185,7 +185,8 @@ async def broadcast(room, clients, message):
         if client["room"] == room:
             await send_message(websocket, message)
 ```
-Nous pouvons enfin lancer le serveur.\
+Nous pouvons enfin lancer le serveur. `asyncio.run()` démarre la *boucle événementielle* d’`asyncio`, ce qui permet ensuite d’utiliser les `await` pour gérer les opérations asynchrones comme l’envoi et la réception de messages, sans bloquer le serveur.
+
 ```python
 async def main(ip, port):
     server = await websockets.serve(handle_client, ip, port)
@@ -193,6 +194,7 @@ async def main(ip, port):
     await server.wait_closed()
 asyncio.run(main("127.0.0.2", 8001))
 ```
+
 
 = Client
 == langage
@@ -262,6 +264,9 @@ function send_message() {
     socket.send(JSON.stringify({ action: 'send_message', message: message }))
 }
 ```
+
+=== Asynchrone
+Comme on peut le voir nous n'utilisons pas vraiment l'asynchrone ici mais c'est parceque on a des évenements à la place (`socket.onmessage`, `onclick`) qui ne bloquent pas le navigateur.
 
 
 = Répartition des tâches
