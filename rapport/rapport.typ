@@ -195,9 +195,9 @@ asyncio.run(main("127.0.0.2", 8001))
 
 = Client
 == langage
-Nous avons choisi d'utiliser une interface web car cela permet une accessibilité immédiate via un navigateur, sans nécessiter d’installation supplémentaire et nous permettra de mettre en applications les enseignements de notre cours de PHP/HTML. Les critiques ont étés entendus et à moitié comprises mais nous pensons que si nous voulons tout géré en "natif" il suffirait de faire une deuxième interface graphique. N'est-ce pas justement cela la force des websockets ? Ca permet d'avoir plusieurs client. On pourrait aussi imaginer un client en CLI.\
-De plus, JavaScript gère les WebSockets nativement et ça nous montre que grâce au protocole WebSocket, l'interface client peut être dans un langage différent du serveur sans aucun problèmes et montre la séparaison frontend/backend.\
-Enfin, à terme, cela permettrait également de déployer l’application sur un serveur distant, accessible depuis n’importe quel appareil connecté à Internet.\
+Nous avons choisi d'utiliser une interface web car cela permet une accessibilité immédiate via un navigateur, sans nécessiter d’installation supplémentaire et nous permettra de mettre en application les enseignements de notre cours de PHP/HTML. Les critiques ont été entendues et partiellement comprises mais nous pensons que si nous voulons tout géré en "natif", il suffirait d'ajouter une deuxième interface graphique. N'est-ce pas justement là la force des websockets ? Cela permet d'avoir plusieurs clients. On pourrait aussi imaginer un client en CLI.\
+De plus, JavaScript gère les WebSockets nativement et ça nous montre que grâce au protocole WebSocket, l'interface client peut être dans un langage différent de celui du serveur sans aucun problème et montre la séparation entre le frontend et le backend.\
+Enfin, à terme, cela permettrait également de déployer l’application sur un serveur distant (Apache), accessible depuis n’importe quel appareil connecté à Internet.\
 == Explication du code
 === Connexion au serveur
 
