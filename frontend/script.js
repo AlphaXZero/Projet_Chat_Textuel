@@ -65,7 +65,6 @@ function create_room(room) {
         alert("Le nom du salon ne peut pas être vide")
         return
     }
-    else {}
         socket.send(JSON.stringify({ action: 'create_room', room: new_room_name }))
         document.getElementById('newRoomName').value = ""
         add_room(new_room_name)
