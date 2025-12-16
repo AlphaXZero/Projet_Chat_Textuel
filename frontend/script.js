@@ -8,6 +8,8 @@ function connect() {
         socket.send(JSON.stringify({ action: 'login', user: user_name }))
         connectionPage.style.display = "none"
         chatPage.style.display = "flex"
+        const status_text = document.getElementById("status_text")
+        status_text.textContent = "Connecté en tant que " + user_name
     }
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
