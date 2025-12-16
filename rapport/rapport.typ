@@ -121,12 +121,13 @@ Nous nous sommes efforcés de garder le code du serveur *simple et lisible* tout
 
 Tout d'abord on importe les bibliothèques nécessaires : `asyncio` pour la gestion asynchrone, `websockets` pour la communication WebSocket, et `json` pour le formatage des messages.\
 
-Nous avons ensuite un dictionnaire *clients* qui stockera le *websocket en clé* et un *dictionnaire* avec le *nom* d'utilisateur et la *salon* de chat en *valeur*.\
+Nous avons ensuite un dictionnaire *clients* qui stockera le *websocket en clé* et un *dictionnaire* avec le *nom* d'utilisateur et la *salon* de chat en *valeur*. On a aussi un petite liste des rooms.\
 #text(
   size: 10pt,
-)[(Il faudrait probablement un deuxième dictionnaire des salons en clé avec chaque utilisateur connecté dessus en valeur, cela permettrait de gérer plus facilement l'envoi de messages à tous les utilisateurs. Mais étant donné, le peu de clients que nous avions à gérer, nous avons préféré garder une seule structure de données pour simplifier le code.)]\
+)[(Il faudrait probablement un deuxième dictionnaire des salons en clé avec chaque utilisateur connecté dessus en valeur, cela permettrait de gérer plus facilement l'envoi de messages à tous les utilisateurs. Mais étant donné, le peu de clients que nous avions à gérer, nous avons préféré garder une seule grosse structure de données pour simplifier le code.)]\
 ```python
 clients = {} # Format: {websocket: {"user": str, "room": str}}
+rooms =["general"]
 ```
 
 Quand un client va se connecter, on le reçoit avec la fonction handle_client qui est en asynchrone ce qui permet de gérer plusieurs clients en même temps sans bloquer l'exécution globale. On enregistre dans le dictionnaire clients avec son websocket comme clé et on le met dans le salon general par défaut.\
@@ -162,7 +163,7 @@ Par exemple, pour l'action "login", on parcours tout le dictionnaire clients (on
                 await send_message(websocket,f"Bienvenue")
 ```
 Après ça on a une petite condition qui empêche l'utilisateur d'interragir avec le serveur s'il n'est pas connecté.\
-On retrouve plus loin la gestion des autres actions.
+On retrouve plus loin la gestion des autres actions. (join_room change juste la room dans le dictionnaire client, create room)
 ```python
         elif clients[websocket]["user"] is None:
             await send_message(
@@ -171,6 +172,24 @@ On retrouve plus loin la gestion des autres actions.
         elif action == "join_room":...
         elif action == "send_message":...
         elif action == "create_room":...
+```
+Les déconnexions sont gérer comme tel. Quand il y a une erreur (page fermé), ça le met dans le log et ça supprime le client de notre liste.
+```python
+  except websockets.exceptions.ConnectionClosed:
+      logger.info(
+          "Client déconnecté : %s",
+          websocket.remote_address,
+      )
+  except Exception:
+      logger.exception("Erreur inattendue")
+
+  finally:
+      if websocket in clients:
+          del clients[websocket]
+          logger.info(
+              "Client supprimé : %s",
+              websocket.remote_address,
+          )
 ```
 
 Pour ce qui est de l'envoi d'un message ou des rooms à un client précis, nous avons une fonction qui formate le message en json avant de l'envoyer.\
@@ -202,8 +221,8 @@ Nous avons choisi d'utiliser une interface web (html/js/css) car cela permet une
 De plus, JavaScript@javascript_definitive_guide gère les WebSockets @mdn_websocket nativement et ça nous montre que grâce au protocole WebSocket l'interface client peut être dans un langage différent de celui du serveur sans aucun problème et montre la séparation entre le frontend et le backend.\
 Enfin, à terme, cela permettrait également de déployer l’application sur un serveur distant (Apache), accessible depuis n’importe quel appareil connecté à Internet.\
 == Explication du code
+Le HTML a été crée par l'IA puis grandement modifié et le CSS quand à lui est presque entierement généré. Le reste à été fait "à la dur" comme suit.
 === Connexion au serveur
-
 Tout d'abord, nous avons un boutton de connexion dans le html qui va appeller notre fonction connect dans js.\
 Tandis que dans notre js on récupère les champs ip, user_name et port pour ensuite envoyer l'action "login" au serveur avec notre nom d'utilisateur.
 `html`:
@@ -250,6 +269,8 @@ function add_message(message) {
     message_input.value = ""
 }
 ```
+
+On recevra aussi les salons du serveur (condition rajouté dans le socket.on.message). Globalement la gestion des salons est gérée de la même manière que les messages, pour éviter la redondance on ne l'expliquera pas.
 === Gestion de l'envoi des messages
 Nous avons un champ d'entrée et un boutton dans notre html. Le script js récupere le contenu du champ une fois le bouton pressé. Le contenu est donc envoyé avec l'action `send_message` au serveur celui-ci va donc le recevoir et le renvoyer ensuite à tout le monde comme nous l'avons vu précedemment dans la partie. Ensuite tous les clients recevront le message qui sera ajouté dans le chat grâce au code vu juste au-dessus.
 `html`:
@@ -270,6 +291,7 @@ Comme on peut le voir nous n'utilisons pas vraiment l'asynchrone ici mais c'est 
 
 
 = Répartition des tâches
+Nous avons utilisé GitHub afin de travailler simultanément sur les parties client et serveur, puis de les regrouper facilement par la suite.
 #table(
   columns: 2,
   [*Partie*], [*Responsable*],
