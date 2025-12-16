@@ -26,6 +26,7 @@ function display_rooms(rooms) {
 
 }
 
+
 function send_message() {
     const message = document.getElementById("messageInput").value
     socket.send(JSON.stringify({ action: 'send_message', message: message }))
@@ -72,6 +73,7 @@ function join_room(room) {
 }
 function disconnect() {
     socket.close()
-    connectionPage.style.display = "flex"
     chatPage.style.display = "none"
+    connectionPage.style.display = "flex"
+
 }
