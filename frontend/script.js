@@ -61,10 +61,15 @@ function add_room(room) {
 
 function create_room(room) {
     const new_room_name = document.getElementById('newRoomName').value.trim()
-    socket.send(JSON.stringify({ action: 'create_room', room: new_room_name }))
-    new_room_name.value = ""
-    add_room(new_room_name)
-}
+    if (new_room_name === "") {
+        alert("Le nom du salon ne peut pas être vide")
+        return
+    }
+    else {}
+        socket.send(JSON.stringify({ action: 'create_room', room: new_room_name }))
+        document.getElementById('newRoomName').value = ""
+        add_room(new_room_name)
+    }
 
 function join_room(room) {
     const container = document.getElementById("messagesContainer")
