@@ -35,7 +35,7 @@
 
 = Serveur
 == langage de programmation
-Nous avons choisi d'implémenter le *serveur en Python* car c'est un *langage* qui nous est *familier* et qui permet de *gérer* facilement le *réseau et l'asynchrone* grâce à des bibliothèques comme *asyncio* et *websockets*.\
+Nous avons choisi d'implémenter le *serveur en Python* car c'est un *langage* qui nous est *familier* et qui permet de *gérer* facilement le *réseau et l'asynchrone* grâce à des bibliothèques comme *asyncio*@python_asyncio et *websockets*@websockets_python\
 == Protocole de transport
 Arpès quelques recherches, nous avons identifié *trois approches* principales pour le *protocole* de transport :
 - Utiliser des *sockets* TCP bruts.
@@ -43,7 +43,7 @@ Arpès quelques recherches, nous avons identifié *trois approches* principales 
 - Utiliser un *framework* (encore plus haut-niveau).
 
 === TCP brut
-L’utilisation directe de *sockets TCP* permettrait de concevoir un *protocole de communication personnalisé*, offrant un *intérêt pédagogique* indéniable.\
+L’utilisation directe de *sockets TCP*@tcp_ip_illustrated *protocole de communication personnalisé*, offrant un *intérêt pédagogique* indéniable.\
 Cependant, cette approche *complexifierait le développement* et nous ne pourrions pas bénéficier des *optimisations* et de la *sécurité* que nous offrirait un *protocole standardisé*.\
 De plus, les *navigateurs* modernes *bloquent les connexions TCP brutes* pour des raisons de sécurité, ce qui *exclut* toute *interface web* côté client (en tout cas simplement).\
 
@@ -71,16 +71,16 @@ Bien que écarté de ce projet pour ces raisons, nous nous sommes quand même in
 === Protocole haut-niveau
 Utiliser un *protocole haut-niveau* comme vu au cours permettrait de bénéficier de *fonctionnalités avancées* et d’une *meilleure fiabilité*.\
 2 choix
-- *WebTransport* : *Intéressant* pour sa *rapidité et son multiplexage*, *mais encore peu standardisé et mal supporté en Python*.
-- *WebSocket* : Protocole *connecté* et *fiable*, *compatible avec tous les navigateurs et bien supporté en Python*.
+- *WebTransport* @webtransport_draft: *Intéressant* pour sa *rapidité et son multiplexage*, *mais encore peu standardisé et mal supporté en Python*.
+- *WebSocket* @cours : Protocole *connecté* et *fiable*, *compatible avec tous les navigateurs et bien supporté en Python*.
 
 === Framework
-FastAPI est un *framework web moderne pour Python*, idéal pour *créer des API RESTful (communication avec un serveur via requêtes) et des applications web*. Son *support natif des WebSockets* simplifie la mise en place d’une communication temps réel entre client et serveur. Il permet aussi d’ajouter facilement des *routes HTTP*, *non pas pour le chat en lui-même qui demande du temps réel mais pour les fonctionnalités annexes (authentification, historique, etc.)*.\
+FastAPI@fastapi_docs est un *framework web moderne pour Python*, idéal pour *créer des API RESTful (communication avec un serveur via requêtes) et des applications web*. Son *support natif des WebSockets* simplifie la mise en place d’une communication temps réel entre client et serveur. Il permet aussi d’ajouter facilement des *routes HTTP*, *non pas pour le chat en lui-même qui demande du temps réel mais pour les fonctionnalités annexes (authentification, historique, etc.)*.\
 Cependant, cette approche réduit la part de développement "manuel", ce qui *limite l’aspect pédagogique* du projet.
 
 === Conclusion du choix de protocole
 Nous optâmes donc de partir sur le *protocole WebSocket grâce à la bibliothèque python éponyme*.\
-C'est d'ailleurs ce *qu'utilisent* certains logiciels pour communication textuel en temps réel comme *Slack, Discord*, etc. Ce qui nous *conforte dans notre choix*.
+C'est d'ailleurs ce *qu'utilisent* certains logiciels pour communication textuel en temps réel comme *Slack @slack_architecture, Discord @discord*, etc. Ce qui nous *conforte dans notre choix*.
 
 == Logging
 Pour enregistrer les informations sur l'exécution de notre application, nous allons utiliser le module intégré en Python `logging`.\
@@ -198,8 +198,8 @@ asyncio.run(main("127.0.0.2", 8001))
 
 = Client
 == langage
-Nous avons choisi d'utiliser une interface web car cela permet une accessibilité immédiate via un navigateur, sans nécessiter d’installation supplémentaire et nous permettra de mettre en application les enseignements de notre cours de PHP/HTML. Les critiques ont été entendues et partiellement comprises mais nous pensons que si nous voulons tout géré en "natif", il suffirait d'ajouter une deuxième interface graphique. N'est-ce pas justement là la force des websockets ? Cela permet d'avoir plusieurs clients. On pourrait aussi imaginer un client en CLI.\
-De plus, JavaScript gère les WebSockets nativement et ça nous montre que grâce au protocole WebSocket, l'interface client peut être dans un langage différent de celui du serveur sans aucun problème et montre la séparation entre le frontend et le backend.\
+Nous avons choisi d'utiliser une interface web (html/js/css) car cela permet une accessibilité immédiate via un navigateur, sans nécessiter d’installation supplémentaire et nous permettra de mettre en application les enseignements de notre cours de PHP/HTML. Les critiques ont été entendues et partiellement comprises mais nous pensons que si nous voulons tout géré en "natif", il suffirait d'ajouter une deuxième interface graphique. N'est-ce pas justement là la force des websockets ? Cela permet d'avoir plusieurs clients. On pourrait aussi imaginer un client en CLI.\
+De plus, JavaScript@javascript_definitive_guide gère les WebSockets @mdn_websocket nativement et ça nous montre que grâce au protocole WebSocket l'interface client peut être dans un langage différent de celui du serveur sans aucun problème et montre la séparation entre le frontend et le backend.\
 Enfin, à terme, cela permettrait également de déployer l’application sur un serveur distant (Apache), accessible depuis n’importe quel appareil connecté à Internet.\
 == Explication du code
 === Connexion au serveur

@@ -18,3 +18,21 @@
 2025-12-16 23:56:25,289 - INFO - Nouvelle connexion client ('127.0.0.1', 47896).
 2025-12-16 23:56:25,296 - INFO - Login réussi : 'fqs' connecté avec succès.
 2025-12-16 23:56:29,843 - INFO - Client supprimé : ('127.0.0.1', 47896)
+2025-12-17 00:18:06,421 - INFO - Serveur démarré sur 127.0.0.2:8001
+2025-12-17 00:18:06,457 - INFO - server listening on 127.0.0.2:8001
+2025-12-17 00:18:10,484 - INFO - connection open
+2025-12-17 00:18:10,485 - INFO - Nouvelle connexion client ('127.0.0.1', 46432).
+2025-12-17 00:18:10,492 - INFO - Login réussi : 'jean' connecté avec succès.
+2025-12-17 00:18:15,072 - INFO - Client supprimé : ('127.0.0.1', 46432)
+2025-12-17 00:18:17,662 - INFO - connection open
+2025-12-17 00:18:17,662 - INFO - Nouvelle connexion client ('127.0.0.1', 46584).
+2025-12-17 00:18:17,673 - INFO - Login réussi : 'jean' connecté avec succès.
+2025-12-17 00:18:19,777 - INFO - Client supprimé : ('127.0.0.1', 46584)
+2025-12-17 00:18:26,140 - INFO - connection open
+2025-12-17 00:18:26,140 - INFO - Nouvelle connexion client ('127.0.0.1', 37728).
+2025-12-17 00:18:26,147 - INFO - Login réussi : 'j' connecté avec succès.
+2025-12-17 00:18:40,453 - INFO - connection open
+2025-12-17 00:18:40,454 - INFO - Nouvelle connexion client ('127.0.0.1', 36684).
+2025-12-17 00:18:40,460 - INFO - Login échoué : pseudo 'j' déjà pris.
+2025-12-17 00:32:36,025 - INFO - Client supprimé : ('127.0.0.1', 37728)
+2025-12-17 00:32:36,025 - INFO - Client supprimé : ('127.0.0.1', 36684)
