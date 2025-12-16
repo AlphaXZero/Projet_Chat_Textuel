@@ -3,19 +3,17 @@ import websockets
 import json
 
 clients = {}
-rooms = {"general": []}
+rooms = ["general"]
 
 
 async def handle_client(websocket):
     clients[websocket] = {"user": None, "room": "general"}
     try:
         await send_rooms(websocket)
-
         async for message in websocket:
             data = json.loads(message)
             action = data.get("action")
-
-            if action == "set_username":
+            if action == "login":
                 already_taken = False
                 username = data.get("user")
                 for i in clients.values():
@@ -25,39 +23,38 @@ async def handle_client(websocket):
                     await send_message(websocket, f"le pseduo {username} est déjà pris")
                 else:
                     clients[websocket]["user"] = username
-                    rooms["general"].append(websocket)
                     await send_message(
                         websocket,
-                        f"Bienvenue, {username}! Vous êtes dans le salon 'general'.",
+                        f"Bienvenue, {clients[websocket]['user']}! Vous êtes dans le salon 'general'.",
                     )
+            elif clients[websocket]["user"] is None:
+                await send_message(
+                    websocket, "veuillez choisir un pseudo avant de pouvoir chatter"
+                )
 
             elif action == "join_room":
                 room = data.get("room")
                 clients[websocket]["room"] = room
-                rooms[room].append(websocket)
                 await send_message(websocket, f"Vous avez rejoint le salon {room}.")
 
             elif action == "send_message":
                 room = clients[websocket]["room"]
                 user = clients[websocket]["user"]
                 message = data.get("message")
-                await broadcast(room, f"{user}: {message}")
+                await broadcast(room, clients, f"{user}: {message}")
 
             elif action == "create_room":
                 room = data.get("room")
                 if room not in rooms:
-                    rooms[room] = []
+                    rooms.append(room)
                     await send_message(websocket, f"Le salon {room} a été créé.")
                 else:
                     await send_message(websocket, f"Le salon {room} existe déjà.")
 
     except websockets.exceptions.ConnectionClosed:
-        print("error deco")
+        print("error")
     finally:
         if websocket in clients:
-            room = clients[websocket]["room"]
-            if room in rooms:
-                rooms[room].remove(websocket)
             del clients[websocket]
 
 
@@ -66,19 +63,20 @@ async def send_message(websocket, message):
 
 
 async def send_rooms(websocket):
-    await websocket.send(json.dumps({"action": "rooms", "rooms": list(rooms.keys())}))
+    await websocket.send(json.dumps({"action": "rooms", "rooms": rooms}))
 
 
-async def broadcast(room, message):
-    for client in rooms[room]:
-        await send_message(client, message)
+async def broadcast(room, clients, message):
+    for websocket, client in clients.items():
+        if client["room"] == room:
+            await send_message(websocket, message)
 
 
-async def main():
-    server = await websockets.serve(handle_client, "localhost", 8765)
+async def main(ip, port):
+    server = await websockets.serve(handle_client, ip, port)
     await server.wait_closed()
 
 
 if __name__ == "__main__":
     print("serveur démaré")
-    asyncio.run(main())
+    asyncio.run(main("127.0.0.2", 8001))

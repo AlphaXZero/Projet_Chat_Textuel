@@ -81,11 +81,93 @@ Cependant, cette approche réduit la part de développement "manuel", ce qui *li
 Nous optâmes donc de partir sur le *protocle WebSocket grâce à la bibliothèque python éponyme*.\
 C'est d'ailleurs ce *qu'utilise* les logiciles de communication en temps réel comme *Slack, Discord*, etc. Ce qui nous *conforte dans notre choix*.
 
+== Protocole json
+Voici le *protocole* que nous avons défini pour la *communication* entre le *client* et le *serveur*. Nous utilisons le *format JSON* pour structurer les messages échangés. Nous nous sommes limités aux *fonctionnalités de base* pour garder le serveur *simple et lisible*.
+=== Actions que le serveur peut recevoir
+```json
+{"action": "login", "user": "AlphaXZero"}
+{"action": "send_message", "message": "<message_content>"}
+{"action": "create_room", "room": "<room_name>"}
+{"action": "join_room", "room": "<room_name>"}
+```
+=== Actions que le serveur peut envoyer
+```json
+{"action": "message", "message": "<message_content>"}
+{"action": "rooms", "rooms": [<room_name>, <room_name>, ...]}
+```
 == Explication du code
+
+Nous nous sommes efforcés de garder le code du serveur *simple et lisible* tout en *implémentant les fonctionnalités principales* demandées afin de bien comprendre comment tout cela fonctionnait. Le serveur pourrait évidemment être amélioré de bien des façons.
 
 Tout d'abord on importe les bibliothèques nécessaires : `asyncio` pour la gestion asynchrone, `websockets` pour la communication WebSocket, et `json` pour le formatage des messages.\
 
-*WORK IN PROGRESS*
+Nous avons ensuite un dictionnaire *clients* qui stockera le *websocket en clé* et un *dictionnaire* avec le *nom* d'utilisateur et la *salon* de chat en *valeur*.\
+Il faudrait probablement un deuxième dictionnaire des salons avec chaque utilisateur connecté dessus en valeur, cela permettrait de gérer plus facilement l'envoi de messages à tous les utilisateurs. Mais étant donné, le peu de clients que nous avions à gérer, nous avons préféré garder une seule structure de données pour simplifier le code.\
+```python
+clients = {} # Format: {websocket: {"user": str, "room": str}}
+```
+
+Quand un client va se connecter, on le reçoit avec la fonction handle_client.On enregistre dans le dictionnaire clients avec son websocket comme clé et on .\
+```python
+async def handle_client(websocket):
+  clients[websocket] = {"user": None, "room": "general"}
+```
+On reçoit ensuite les messages du client chaque message est attendu au format json décrit précedemment.(on envoie également au client les salons disponibles)\
+```python
+  try:
+    await send_rooms(websocket)
+    async for message in websocket:
+        data = json.loads(message)
+        action = data.get("action")
+```
+On peut ensuite traiter les différentes actions que le client peut envoyer au serveur en fonction de la clé "action" du message reçu.\
+Par exemple, pour l'action "login", on parcours tout le dictionnaire clients pour voir si le pseudo est déjà pris puis on enregistre le nom d'utilisateur du client dans le dictionnaire clients s'il est bien disponible.\
+```python
+        if action == "login":
+            username = data.get("user")
+            already_taken = False
+            for i in clients.values():
+                if i["user"] == username:
+                    already_taken = True
+            if already_taken:
+                await send_message(websocket, f"pseudo invalide")
+            else:
+                clients[websocket]["user"] = username
+                await send_message(websocket,f"Bienvenue")
+```
+Après ça on a une petite condition qui empêche d'interragir avant de s'être connecté.\
+On retrouve plus loin la gestion des autres actions.
+```python
+        elif clients[websocket]["user"] is None:
+            await send_message(
+                websocket, "veuillez choisir un pseudo avant de pouvoir chatter"
+            )
+        elif action == "join_room":...
+        elif action == "send_message":...
+        elif action == "create_room":...
+```
+
+Pour ce qui est de l'envoi d'un message ou des rooms à un client précis, nous avons une petite fonction qui formate le message en json avant de l'envoyer.\
+```python
+async def send_message(websocket, message):
+    await websocket.send(json.dumps({"action": "message", "message": message}))
+```
+Par contre lorsque un utilisateur envoie un message, on doit l'envoyer à tous les clients connectés dans le même salon. On appelera la fonction broadcast qui parcourera le dictionnaire clients et enverra le message à tous les clients du salon même nous comme ça on appraitra aussi dans l'historique. A noter qu'on a pas besoin d'un parametre sender car on mettra ce dernier dans le message envoyé. `await broadcast(room, clients, f"{user}: {message}") `
+```python
+async def broadcast(room, clients, message):
+    for websocket, client in clients.items():
+        if client["room"] == room:
+            await send_message(websocket, message)
+```
+
+Nous pouvons enfin lancer le serveur.\
+```python
+async def main(ip, port):
+    server = await websockets.serve(handle_client, ip, port)
+    print(f"Serveur démarré sur ws://{ip}:{port}")
+    await server.wait_closed()
+asyncio.run(main("127.0.0.2", 8001))
+```
 
 = Client
 == Language
