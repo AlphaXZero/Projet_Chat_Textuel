@@ -7,12 +7,9 @@
   authors: (
     "Coisne Valentin",
     "Van der Veen Georgé",
-  ), // Replace with [] to remove the school logo
+  ),
   academic-year: "2025-2026",
-  french: true, // Use french instead of englis
-
-
-  // Text used in left side of the footer
+  french: true,
 )
 
 #show cite: it => {
@@ -40,7 +37,7 @@
 == langage de programmation
 Nous avons choisi d'implémenter le *serveur en Python* car c'est un *langage* qui nous est *familier* et qui permet de *gérer* facilement le *réseau et l'asynchrone* grâce à des bibliothèques comme *asyncio* et *websockets*.\
 == Protocole de transport
-Arpsè quelques recherches, nous avons identifié *trois approches* principales pour le *protocole* de transport :
+Arpès quelques recherches, nous avons identifié *trois approches* principales pour le *protocole* de transport :
 - Utiliser des *sockets* TCP bruts.
 - Utiliser un *protocole de plus haut-niveau*.
 - Utiliser un *framework* (encore plus haut-niveau).
@@ -48,9 +45,9 @@ Arpsè quelques recherches, nous avons identifié *trois approches* principales 
 === TCP brut
 L’utilisation directe de *sockets TCP* permettrait de concevoir un *protocole de communication personnalisé*, offrant un *intérêt pédagogique* indéniable.\
 Cependant, cette approche *complexifierait le développement* et nous ne pourrions pas bénéficier des *optimisations* et de la *sécurité* que nous offrirait un *protocole standardisé*.\
-De plus, les *navigateurs* modernes *bloquent les connexions TCP brutes* pour des raisons de sécurité, ce qui *exclut* toute *interface web* côté client.\
+De plus, les *navigateurs* modernes *bloquent les connexions TCP brutes* pour des raisons de sécurité, ce qui *exclut* toute *interface web* côté client (en tout cas simplement).\
 
-Bien que écarté de ce projet pour ces raisons, nous nous sommes quand même intéressé à l'implémentation de cette solution en python afin de mieux comprendre ce que faciliterait l'utilisation d'un protocle existant tel que WebSocket. Voici un *tableau non-exhaustif des différentes choses qui seraient bien plus complexes en tcp brut comparé à WebSocket* :
+Bien que écarté de ce projet pour ces raisons, nous nous sommes quand même intéressé à l'implémentation de cette solution en python afin de mieux comprendre ce que faciliterait l'utilisation de WebSocket. Voici un *tableau non-exhaustif des différentes choses qui seraient bien plus complexes en tcp brut comparé à WebSocket* :
 #table(
   columns: 3,
   [*Fonctionnalités*], [*Socket*], [*Websocket*],
@@ -59,7 +56,7 @@ Bien que écarté de ce projet pour ces raisons, nous nous sommes quand même in
   [Géré par la bibliothèque.],
 
   [Intégrité des messages],
-  [Etant donné que *TCP* est un *flux continue*, certains *messages* pourraient être *fragmentés ou combinés*. Il faut donc implémenter un mécanisme pour *délimiter les messages*. Par exemple, utiliser des *séparateurs* ou *préciser la taille du message*],
+  [Etant donné que *TCP* est un *flux continu*, certains *messages* pourraient être *fragmentés ou combinés*. Il faut donc implémenter un mécanisme pour *délimiter les messages*. Par exemple, utiliser des *séparateurs* ou *préciser la taille du message en octet avant le message*],
   [En *une ligne de code* le message est *reçu* en entier.],
 
   [Déconnexion],
@@ -71,19 +68,19 @@ Bien que écarté de ce projet pour ces raisons, nous nous sommes quand même in
   [On peut utiliser wss:\// pour *chiffrer les données en TLS*(Transport Layer Security ).],
 )
 
-=== Protocole haut-niveau existant
+=== Protocole haut-niveau
 Utiliser un *protocole haut-niveau* comme vu au cours permettrait de bénéficier de *fonctionnalités avancées* et d’une *meilleure fiabilité*.\
 2 choix
 - *WebTransport* : *Intéressant* pour sa *rapidité et son multiplexage*, *mais encore peu standardisé et mal supporté en Python*.
 - *WebSocket* : Protocole *connecté* et *fiable*, *compatible avec tous les navigateurs et bien supporté en Python*.
 
-=== WebSocket via FastAPI
-FastAPI est un *framework web moderne pour Python*, idéal pour *créer des API RESTful( communication avec un serveur via requêtes) et des applications web*. Son *support natif des WebSockets* simplifie la mise en place d’une communication temps réel entre client et serveur. Il permet aussi d’ajouter facilement des *routes HTTP*, *non pas pour le chat en lui-même qui demande du temps réel mais pour des fonctionnalités annexes (authentification, historique, etc.)*.\
+=== Framework
+FastAPI est un *framework web moderne pour Python*, idéal pour *créer des API RESTful (communication avec un serveur via requêtes) et des applications web*. Son *support natif des WebSockets* simplifie la mise en place d’une communication temps réel entre client et serveur. Il permet aussi d’ajouter facilement des *routes HTTP*, *non pas pour le chat en lui-même qui demande du temps réel mais pour les fonctionnalités annexes (authentification, historique, etc.)*.\
 Cependant, cette approche réduit la part de développement "manuel", ce qui *limite l’aspect pédagogique* du projet.
 
 === Conclusion du choix de protocole
-Nous optâmes donc de partir sur le *protocle WebSocket grâce à la bibliothèque python éponyme*.\
-C'est d'ailleurs ce *qu'utilise* les logiciles de communication en temps réel comme *Slack, Discord*, etc. Ce qui nous *conforte dans notre choix*.
+Nous optâmes donc de partir sur le *protocole WebSocket grâce à la bibliothèque python éponyme*.\
+C'est d'ailleurs ce *qu'utilisent* certains logiciels pour communication textuel en temps réel comme *Slack, Discord*, etc. Ce qui nous *conforte dans notre choix*.
 
 == Loggin
 Pour enregistrer les informations sur l'exécution de notre application, nous allons utiliser le module intégré en Python `logging`.\
@@ -98,13 +95,13 @@ logging.basicConfig(
     ]
 )
 ```
-Puis dans le code nous faisons juste
+Puis dans le code nous mettons une ligne de ce genre pour l'écrire dans le server.log.
 ```python
-logging.info(f"Nouvelle connexion depuis {websocket.remote_address}")
+logging.info(f"Nouvelle connexion depuis {websocket}")
 ```
 
 == Protocole json
-Voici le *protocole* que nous avons défini pour la *communication* entre le *client* et le *serveur*. Nous utilisons le *format JSON* pour structurer les messages échangés. Nous nous sommes limités aux *fonctionnalités de base* pour garder le serveur *simple et lisible*.
+Voici le *protocole* sommaire que nous avons défini pour la *communication* entre le *client* et le *serveur*. Nous utilisons le *format JSON* pour structurer les messages échangés. Nous nous sommes limités aux *fonctionnalités de base* pour garder le serveur *simple et lisible*.
 === Actions que le serveur peut recevoir
 ```json
 {"action": "login", "user": "AlphaXZero"}
@@ -126,12 +123,12 @@ Tout d'abord on importe les bibliothèques nécessaires : `asyncio` pour la gest
 Nous avons ensuite un dictionnaire *clients* qui stockera le *websocket en clé* et un *dictionnaire* avec le *nom* d'utilisateur et la *salon* de chat en *valeur*.\
 #text(
   size: 10pt,
-)[(Il faudrait probablement un deuxième dictionnaire des salons avec chaque utilisateur connecté dessus en valeur, cela permettrait de gérer plus facilement l'envoi de messages à tous les utilisateurs. Mais étant donné, le peu de clients que nous avions à gérer, nous avons préféré garder une seule structure de données pour simplifier le code.)]\
+)[(Il faudrait probablement un deuxième dictionnaire des salons en clé avec chaque utilisateur connecté dessus en valeur, cela permettrait de gérer plus facilement l'envoi de messages à tous les utilisateurs. Mais étant donné, le peu de clients que nous avions à gérer, nous avons préféré garder une seule structure de données pour simplifier le code.)]\
 ```python
 clients = {} # Format: {websocket: {"user": str, "room": str}}
 ```
 
-Quand un client va se connecter, on le reçoit avec la fonction handle_client.On enregistre dans le dictionnaire clients avec son websocket comme clé et on le met dans le salon room.\
+Quand un client va se connecter, on le reçoit avec la fonction handle_client qui est en asynchrone ce qui permet de gérer plusieurs clients en même temps. On enregistre dans le dictionnaire clients avec son websocket comme clé et on le met dans le salon general par défaut.\
 ```python
 async def handle_client(websocket):
   clients[websocket] = {"user": None, "room": "general"}
@@ -144,8 +141,12 @@ On reçoit ensuite les messages du client chaque message est attendu au format j
         data = json.loads(message)
         action = data.get("action")
 ```
+```
+async def send_rooms(websocket):
+    await websocket.send(json.dumps({"action": "rooms", "rooms": rooms}))
+```
 On peut ensuite traiter les différentes actions que le client peut envoyer au serveur en fonction de la clé "action" du message reçu.\
-Par exemple, pour l'action "login", on parcours tout le dictionnaire clients pour voir si le pseudo est déjà pris puis on enregistre le nom d'utilisateur du client dans le dictionnaire clients s'il est bien disponible.\
+Par exemple, pour l'action "login", on parcours tout le dictionnaire clients (on pourrait opti avec un set par exemple) pour voir si le pseudo est déjà pris puis on enregistre le nom d'utilisateur du client dans le dictionnaire clients s'il est bien disponible.\
 ```python
         if action == "login":
             username = data.get("user")
@@ -159,7 +160,7 @@ Par exemple, pour l'action "login", on parcours tout le dictionnaire clients pou
                 clients[websocket]["user"] = username
                 await send_message(websocket,f"Bienvenue")
 ```
-Après ça on a une petite condition qui empêche d'interragir avant de s'être connecté.\
+Après ça on a une petite condition qui empêche l'utilisateur d'interragir avec le serveur s'il n'est pas connecté.\
 On retrouve plus loin la gestion des autres actions.
 ```python
         elif clients[websocket]["user"] is None:
@@ -171,19 +172,18 @@ On retrouve plus loin la gestion des autres actions.
         elif action == "create_room":...
 ```
 
-Pour ce qui est de l'envoi d'un message ou des rooms à un client précis, nous avons une petite fonction qui formate le message en json avant de l'envoyer.\
+Pour ce qui est de l'envoi d'un message ou des rooms à un client précis, nous avons une fonction qui formate le message en json avant de l'envoyer.\
 ```python
 async def send_message(websocket, message):
     await websocket.send(json.dumps({"action": "message", "message": message}))
 ```
-Par contre lorsque un utilisateur envoie un message, on doit l'envoyer à tous les clients connectés dans le même salon. On appelera la fonction broadcast qui parcourera le dictionnaire clients et enverra le message à tous les clients du salon même nous comme ça on appraitra aussi dans l'historique. A noter qu'on a pas besoin d'un parametre sender car on mettra ce dernier dans le message envoyé. `await broadcast(room, clients, f"{user}: {message}") `
+Par contre lorsque un utilisateur envoie un message, on doit l'envoyer à tous les clients connectés dans le même salon. On appelera la fonction broadcast qui parcourera le dictionnaire clients et enverra le message à tous les clients du salon même nous comme ça on appraitra aussi dans l'historique. A noter qu'on a pas besoin d'un parametre (sender par exemple) car on mettra ce dernier dans le message envoyé. `await broadcast(room, clients, f"{user}: {message}") `
 ```python
 async def broadcast(room, clients, message):
     for websocket, client in clients.items():
         if client["room"] == room:
             await send_message(websocket, message)
 ```
-
 Nous pouvons enfin lancer le serveur.\
 ```python
 async def main(ip, port):
@@ -195,7 +195,7 @@ asyncio.run(main("127.0.0.2", 8001))
 
 = Client
 == langage
-Nous avons choisi d'utiliser une interface web car cela permet une accessibilité facile via un navigateur, sans nécessiter d’installation supplémentaire et nous permettra de mettre en applications notre cours de php/html.\
+Nous avons choisi d'utiliser une interface web car cela permet une accessibilité immédiate via un navigateur, sans nécessiter d’installation supplémentaire et nous permettra de mettre en applications les enseignements de notre cours de PHP/HTML. Les critiques ont étés entendus et à moitié comprises mais nous pensons que si nous voulons tout géré en "natif" il suffirait de faire une deuxième interface graphique. N'est-ce pas justement cela la force des websockets ? Ca permet d'avoir plusieurs client. On pourrait aussi imaginer un client en CLI.\
 De plus, JavaScript gère les WebSockets nativement et ça nous montre que grâce au protocole WebSocket, l'interface client peut être dans un langage différent du serveur sans aucun problèmes et montre la séparaison frontend/backend.\
 Enfin, à terme, cela permettrait également de déployer l’application sur un serveur distant, accessible depuis n’importe quel appareil connecté à Internet.\
 == Explication du code
