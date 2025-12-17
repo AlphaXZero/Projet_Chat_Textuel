@@ -103,6 +103,7 @@ logger.info("Login échoué : pseudo '%s' déjà pris.", username)
 
 == Protocole json
 Voici le *protocole* sommaire que nous avons défini pour la *communication* entre le *client* et le *serveur*. Nous utilisons le *format JSON* pour structurer les messages échangés. Nous nous sommes limités aux *fonctionnalités de base* pour garder le serveur *simple et lisible*.
+Vu que le client aura toujours un salon lié à lui, on ne trouve pas qu'une action quitter soit nécessaire, on changera juste son salon lié.
 === Actions que le serveur peut recevoir
 ```json
 {"action": "login", "user": "AlphaXZero"}
@@ -164,7 +165,7 @@ Par exemple, pour l'action "login", on parcours tout le dictionnaire clients (on
                 await send_message(websocket,f"Bienvenue")
 ```
 Après ça on a une petite condition qui empêche l'utilisateur d'interragir avec le serveur s'il n'est pas connecté.\
-On retrouve plus loin la gestion des autres actions. (join_room change juste la room dans le dictionnaire client, create room)
+On retrouve plus loin la gestion des autres actions. (join_room change juste la room dans le dictionnaire client)
 ```python
         elif clients[websocket]["user"] is None:
             await send_message(
