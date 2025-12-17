@@ -1,4 +1,5 @@
 # Description du Projet
+# Lire le rapport pour plus de précision
 Application de chat en temps réel permettant la création et la gestion de multiples salons de discussion. La communication entre le client et le serveur s'effectue via WebSocket pour un échange fluide et instantané.
 
 # Démarrage du Serveur
