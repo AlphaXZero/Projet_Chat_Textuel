@@ -37,7 +37,7 @@
 == langage de programmation
 Nous avons choisi d'implémenter le *serveur en Python* car c'est un *langage* qui nous est *familier* et qui permet de *gérer* facilement le *réseau et l'asynchrone* grâce à des bibliothèques comme *asyncio*@python_asyncio et *websockets*@websockets_python\
 == Protocole de transport
-Arpès quelques recherches, nous avons identifié *trois approches* principales pour le *protocole* de transport :
+Après quelques recherches, nous avons identifié *trois approches* principales pour le *protocole* de transport :
 - Utiliser des *sockets* TCP bruts.
 - Utiliser un *protocole de plus haut-niveau*.
 - Utiliser un *framework* (encore plus haut-niveau).
@@ -64,7 +64,7 @@ Bien que écarté de ce projet pour ces raisons, nous nous sommes quand même in
   [Les déconnexions et le nettoyage sont gérés *automatiquement*.],
 
   [Sécurité],
-  [Les données ne sont *pas chiffrées* par defaut.],
+  [Les données ne sont *pas chiffrées* par *défaut*.],
   [On peut utiliser wss:\// pour *chiffrer les données en TLS*(Transport Layer Security ).],
 )
 
@@ -82,7 +82,7 @@ Nous optâmes donc de partir sur le *protocole WebSocket grâce à la bibliothè
 C'est d'ailleurs ce *qu'utilisent* certains logiciels pour communication textuel en temps réel comme *Slack @slack_architecture, Discord @discord*, etc. Ce qui nous *conforte dans notre choix*.
 
 == Logging
-Pour enregistrer les informations sur l'exécution de notre application, nous allons utiliser le module intégré en Python `logging`.\
+Pour enregistrer les informations sur l'exécution de notre application, nous allons utiliser le *module intégré* en *Python* `logging`.\
 On le configure au début:
 ```python
 logging.basicConfig(
@@ -102,7 +102,7 @@ logger.info("Login échoué : pseudo '%s' déjà pris.", username)
 
 == Protocole json
 Voici le *protocole* sommaire que nous avons défini pour la *communication* entre le *client* et le *serveur*. Nous utilisons le *format JSON* pour structurer les messages échangés. Nous nous sommes limités aux *fonctionnalités de base* pour garder le serveur *simple et lisible*.
-Vu que le client aura toujours un salon lié à lui, on ne trouve pas qu'une action quitter soit nécessaire, on changera juste son salon lié.
+Vu que le *client* aura toujours un *salon lié* à lui, on ne trouve pas qu'une *action "quitter"* soit nécessaire, on changera juste son *salon lié*.
 === Actions que le serveur peut recevoir
 ```json
 {"action": "login", "user": "AlphaXZero"}
@@ -119,24 +119,24 @@ Vu que le client aura toujours un salon lié à lui, on ne trouve pas qu'une act
 
 Nous nous sommes efforcés de garder le code du serveur *simple et lisible* tout en *implémentant les fonctionnalités principales* demandées afin de bien comprendre comment tout cela fonctionnait. Le serveur pourrait évidemment être amélioré de bien des façons.
 
-Tout d'abord on importe les bibliothèques nécessaires : `asyncio` pour la gestion asynchrone, `websockets` pour la communication WebSocket, et `json` pour le formatage des messages.\
+Tout d'abord on importe les bibliothèques nécessaires : `asyncio` pour la *gestion asynchrone*, `websockets` pour la *communication WebSocket*, et `json` pour le *formatage des messages*.\
 
 Nous avons ensuite un dictionnaire *clients* qui stockera le *websocket en clé* et un *dictionnaire* avec le *nom* d'utilisateur et la *salon* de chat en *valeur*. On a aussi un petite liste des rooms.\
 #text(
   size: 10pt,
-)[(Il faudrait probablement un deuxième dictionnaire des salons en clé avec chaque utilisateur connecté dessus en valeur, cela permettrait de gérer plus facilement l'envoi de messages à tous les utilisateurs. Mais étant donné, le peu de clients que nous avions à gérer, nous avons préféré garder une seule grosse structure de données pour simplifier le code.)]\
+)[(Il faudrait probablement un *deuxième dictionnaire* des *salons* en clé avec chaque utilisateur connecté dessus en valeur, cela permettrait de gérer plus facilement l'envoi de messages à tous les utilisateurs. Mais étant donné, le peu de clients que nous avions à gérer, nous avons préféré garder une seule grosse structure de données pour *simplifier* le code.)]\
 ```python
 clients = {} # Format: {websocket: {"user": str, "room": str}}
 rooms =["general"]
 ```
 
-Quand un client va se connecter, on le reçoit avec la fonction handle_client qui est en asynchrone ce qui permet de gérer plusieurs clients en même temps sans bloquer l'exécution globale. On enregistre dans le dictionnaire clients avec son websocket comme clé et on le met dans le salon general par défaut.\
+Quand un client va se connecter, on le reçoit avec la fonction *handle_client* qui est en *asynchrone* ce qui permet de *gérer plusieurs clients en même temps sans bloquer l'exécution globale*. On *enregistre* dans le *dictionnaire* clients avec son *websocket* comme *clé* et on le met dans le *salon général par défaut*.\
 ```python
 async def handle_client(websocket):
   clients[websocket] = {"user": None, "room": "general"}
 ```
 #pagebreak()
-On reçoit ensuite les messages du client chaque message est attendu au format json décrit précedemment.On envoie également au client les salons disponibles, le mot-clé await permet d'attendre que le message soit envoyé avant de continuer. Tout ça toujours sans bloquer les autres clients.\
+On reçoit ensuite les messages du client (*chaque message est attendu au format JSON*) décrit *précédemment.* On *envoie* également au *client* les *salons disponibles*, le mot-clé *await* permet d'attendre que le message soit envoyé avant de continuer. Tout cela se fait sans bloquer les autres clients.\
 ```python
   try:
     await send_rooms(websocket)
@@ -148,8 +148,8 @@ On reçoit ensuite les messages du client chaque message est attendu au format j
 async def send_rooms(websocket):
     await websocket.send(json.dumps({"action": "rooms", "rooms": rooms}))
 ```
-On peut ensuite traiter les différentes actions que le client peut envoyer au serveur en fonction de la clé "action" du message reçu.\
-Par exemple, pour l'action "login", on parcours tout le dictionnaire clients (on pourrait opti avec un set par exemple) pour voir si le pseudo est déjà pris puis on enregistre le nom d'utilisateur du client dans le dictionnaire clients s'il est bien disponible.\
+On peut ensuite *traiter les différentes actions que le client peut envoyer au serveur en fonction de la clé "action" du message reçu*.\
+Par exemple, pour l'action *"login"*, on *parcours tout le dictionnaire clients* (on pourrait opti avec un set par exemple) pour voir si *le pseudo est déjà pris* puis on *enregistre le nom d'utilisateur* du client dans le *dictionnaire* clients s'il est bien disponible.\
 ```python
         if action == "login":
             username = data.get("user")
@@ -163,7 +163,7 @@ Par exemple, pour l'action "login", on parcours tout le dictionnaire clients (on
                 clients[websocket]["user"] = username
                 await send_message(websocket,f"Bienvenue")
 ```
-Après ça on a une petite condition qui empêche l'utilisateur d'interragir avec le serveur s'il n'est pas connecté.\
+Après cela, nous avons une petite *condition* qui empêche l'*utilisateur* d'*interagir* avec le serveur s'il n'est pas *connecté*.\
 On retrouve plus loin la gestion des autres actions. (join_room change juste la room dans le dictionnaire client)
 ```python
         elif clients[websocket]["user"] is None:
@@ -175,7 +175,7 @@ On retrouve plus loin la gestion des autres actions. (join_room change juste la 
         elif action == "create_room":...
 ```
 #pagebreak()
-Les déconnexions sont gérer comme tel. Quand il y a une erreur (page fermé), ça le met dans le log et ça supprime le client de notre liste.
+Les *déconnexions* sont *gérées* comme suit. Lorsqu'une erreur survient (par exemple : fermeture de la page), cela est consigné dans le *log* et le *client* est *supprimé* de notre liste.
 ```python
   except websockets.exceptions.ConnectionClosed:
       logger.info(
@@ -194,12 +194,12 @@ Les déconnexions sont gérer comme tel. Quand il y a une erreur (page fermé), 
           )
 ```
 
-Pour ce qui est de l'envoi d'un message ou des rooms à un client précis, nous avons une fonction qui formate le message en json avant de l'envoyer.\
+Pour ce qui est de l'*envoi d'un message* ou des *rooms* à un *client précis*, nous avons une fonction qui *formate* le message en *JSON* avant de l'envoyer.\
 ```python
 async def send_message(websocket, message):
     await websocket.send(json.dumps({"action": "message", "message": message}))
 ```
-Par contre lorsque un utilisateur envoie un message, on doit l'envoyer à tous les clients connectés dans le même salon. On appelera la fonction broadcast qui parcourera le dictionnaire clients et enverra le message à tous les clients du salon même nous comme ça on appraitra aussi dans l'historique. A noter qu'on a pas besoin d'un parametre (sender par exemple) car on mettra ce dernier dans le message envoyé. `await broadcast(room, clients, f"{user}: {message}") `
+Par contre, lorsqu'un *utilisateur* envoie un message, on doit l'envoyer à tous les *clients connectés* dans le même *salon*. On *appellera* la fonction *broadcast* qui parcourra le *dictionnaire clients* et enverra le message à tous les clients du salon (y compris nous), ce qui fera *apparaître* le message dans l'*historique*. *À* noter qu'on *n'a pas besoin* d'un *paramètre* (sender par exemple) car on mettra ce dernier dans le message envoyé. `await broadcast(room, clients, f"{user}: {message}") `
 ```python
 async def broadcast(room, clients, message):
     for websocket, client in clients.items():
@@ -219,14 +219,14 @@ asyncio.run(main("127.0.0.2", 8001))
 #pagebreak()
 = Client
 == langage
-Nous avons choisi d'utiliser une interface web (html/js/css) car cela permet une accessibilité immédiate via un navigateur, sans nécessiter d’installation supplémentaire et nous permettra de mettre en application les enseignements de notre cours de PHP/HTML. Les critiques ont été entendues et partiellement comprises mais nous pensons que si nous voulons tout géré en "natif", il suffirait d'ajouter une deuxième interface graphique. N'est-ce pas justement là la force des websockets ? Cela permet d'avoir plusieurs clients. On pourrait aussi imaginer un client en CLI.\
-De plus, JavaScript@javascript_definitive_guide gère les WebSockets @mdn_websocket nativement et ça nous montre que grâce au protocole WebSocket l'interface client peut être dans un langage différent de celui du serveur sans aucun problème et montre la séparation entre le frontend et le backend.\
-Enfin, à terme, cela permettrait également de déployer l’application sur un serveur distant (Apache), accessible depuis n’importe quel appareil connecté à Internet.\
+Nous avons choisi d'utiliser une *interface web* (*html/js/css*) car cela permet une accessibilité immédiate via un *navigateur*, sans nécessiter d’installation supplémentaire et nous permettra de mettre en application les enseignements de notre cours de PHP/HTML. Les critiques ont été entendues et partiellement comprises mais nous pensons que si nous voulons tout *gérer* en "natif", il suffirait d'ajouter une deuxième interface graphique. N'est-ce pas justement là la force des *WebSockets* ? Cela permet d'avoir plusieurs clients. On pourrait aussi imaginer un *client en CLI*.\
+De plus, *JavaScript*@javascript_definitive_guide gère les *WebSockets* @mdn_websocket nativement et ça nous montre que grâce au *protocole WebSocket* l'interface client peut être dans un langage différent de celui du serveur sans aucun problème et montre la séparation entre le *frontend* et le *backend*.\
+Enfin, à terme, cela permettrait également de *déployer* l’application sur un *serveur distant* (*Apache*), *accessible* depuis n’importe quel appareil connecté à *Internet*.\
 == Explication du code
-Le HTML a été crée par l'IA puis grandement modifié et le CSS quand à lui est presque entierement généré. Le reste à été fait "à la dur" comme suit.
+Le *HTML* a été *créé* par l'*IA* puis grandement modifié et le *CSS* quant à lui est presque entièrement généré. Le reste a été fait *manuellement*.
 === Connexion au serveur
-Tout d'abord, nous avons un boutton de connexion dans le html qui va appeller notre fonction connect dans js.\
-Tandis que dans notre js on récupère les champs ip, user_name et port pour ensuite envoyer l'action "login" au serveur avec notre nom d'utilisateur.
+Tout d'abord, nous avons un *bouton de connexion* dans le *html* qui va appeler notre *fonction `connect`* dans le *js*.\
+Tandis que dans notre *js* on récupère les champs *ip*, *user_name* et *port* pour ensuite envoyer l'*action "login"* au serveur avec notre nom d'utilisateur.
 `html`:
 ```html
 <input type="text" id="serverIp" value="127.0.0.2" required>
@@ -259,8 +259,8 @@ On rajoute toujours dans la fonction connect : `socket.onmessage` qui dira à no
         }
     }
 ```
-Nous nous occupons donc de la réception des messages, on crée une fonction add_message qui édite notre `div` pour ajouter du texte dedans. On appellera cette fonction à chaque fois qu'on souhaitera ajouter des choses dans le chat.
-Sans trop rentrer dans les détails, ça ajouter le message, scroll tout en bas et vide le champ d'entrée
+Nous nous occupons donc de la réception des messages, on crée une fonction *add_message* qui édite notre *`div`* pour ajouter du *texte* dedans. On appellera cette fonction à chaque fois qu'on souhaitera ajouter des choses dans le *chat*.
+Sans trop rentrer dans les détails, ça ajoute le *message*, scroll tout en bas et vide le champ d'entrée
 ```js
 function add_message(message) {
     const message_input = document.getElementById("messageInput")
@@ -273,9 +273,9 @@ function add_message(message) {
 }
 ```
 
-On recevra aussi les salons du serveur (condition rajouté dans le socket.on.message). Globalement la gestion des salons est gérée de la même manière que les messages, pour éviter la redondance on ne l'expliquera pas.
+On recevra aussi les *salons* du serveur (condition rajoutée dans le *socket.onmessage*). Globalement la *gestion des salons* est gérée de la même manière que les messages, pour éviter la redondance on ne l'expliquera pas.
 === Gestion de l'envoi des messages
-Nous avons un champ d'entrée et un boutton dans notre html. Le script js récupere le contenu du champ une fois le bouton pressé. Le contenu est donc envoyé avec l'action `send_message` au serveur celui-ci va donc le recevoir et le renvoyer ensuite à tout le monde comme nous l'avons vu précedemment dans la partie. Ensuite tous les clients recevront le message qui sera ajouté dans le chat grâce au code vu juste au-dessus.
+Nous avons un *champ d'entrée* et un *bouton* dans notre *html*. Le script *js* récupère le contenu du champ une fois le bouton pressé. Le contenu est donc envoyé avec l'action *`send_message`* au *serveur* qui va le recevoir et le renvoyer ensuite à tous les *clients* comme nous l'avons vu précédemment. Ensuite tous les clients recevront le message qui sera ajouté dans le *chat* grâce au code vu juste au-dessus.
 `html`:
 ```html
 <input type="text" id="messageInput" placeholder="Tapez votre message..." required>
@@ -290,11 +290,11 @@ function send_message() {
 ```
 
 === Asynchrone
-Comme on peut le voir nous n'utilisons pas vraiment l'asynchrone ici mais c'est parceque on a des évenements à la place (`socket.onmessage`, `onclick`) qui ne bloquent pas le navigateur.
+Comme on peut le voir nous n'utilisons pas vraiment l'*asynchrone* ici mais c'est parce que nous avons des *événements* à la place (*`socket.onmessage`*, *`onclick`*) qui ne bloquent pas le navigateur.
 
 
 = Répartition des tâches
-Nous avons utilisé GitHub afin de travailler simultanément sur les parties client et serveur, puis de les regrouper facilement par la suite.
+Nous avons utilisé *GitHub* afin de travailler simultanément sur les parties *client* et *serveur*, puis de les *regrouper* facilement par la suite.
 #table(
   columns: 2,
   [*Partie*], [*Responsable*],
