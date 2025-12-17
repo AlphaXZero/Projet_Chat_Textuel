@@ -70,7 +70,6 @@ Bien que écarté de ce projet pour ces raisons, nous nous sommes quand même in
 
 === Protocole haut-niveau
 Utiliser un *protocole haut-niveau* comme vu au cours permettrait de bénéficier de *fonctionnalités avancées* et d’une *meilleure fiabilité*.\
-2 choix
 - *WebTransport* @webtransport_draft: *Intéressant* pour sa *rapidité et son multiplexage*, *mais encore peu standardisé et mal supporté en Python*.
 - *WebSocket* @cours : Protocole *connecté* et *fiable*, *compatible avec tous les navigateurs et bien supporté en Python*.
 
